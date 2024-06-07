@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from typing import Annotated
 import models
-from schemas import ProduktInfo
+from schemas import *
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
@@ -21,6 +21,21 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+@app.get("/produkt/{Nazwa}", status_code = status.HTTP_200_OK)
+async def pokazProdukt(Nazwa: str, db: db_dependency):
+    produkt = db.query(models.Produkt).filter(models.Produkt.Nazwa == Nazwa).first()
+    if produkt is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono produktu")
+    return produkt
+
+@app.get("/produkt/", status_code = status.HTTP_200_OK)
+async def pokazProdukty(db: Session = Depends(get_db)):
+    produkty = db.query(models.Produkt).all()
+    if produkty is None:
+        raise HTTPException(status_code=404, detail="Brak produktow")
+    return {'ilosc produktow': len(produkty),'produkty': produkty}
+
+
 @app.post("/produkt/", status_code=status.HTTP_201_CREATED)
 async def stworzProdukt(produkt_info: ProduktInfo, db: db_dependency):
     db_produkt = models.Produkt(
@@ -35,19 +50,18 @@ async def stworzProdukt(produkt_info: ProduktInfo, db: db_dependency):
     db.commit()
     raise HTTPException(status_code=200, detail=f"Produkt {produkt_info.Nazwa} zostal dodany do bazy")
 
-@app.get("/produkt/{Nazwa}", status_code = status.HTTP_200_OK)
-async def pokazProdukt(Nazwa: str, db: db_dependency):
-    produkt = db.query(models.Produkt).filter(models.Produkt.Nazwa == Nazwa).first()
+@app.put("/produkt/{produkt_id}", status_code=status.HTTP_200_OK)
+async def aktualizujProdukt(produkt_id: int, produkt_info: ProduktAktualizacja, db: db_dependency):
+    produkt = db.query(models.Produkt).filter(models.Produkt.ID_produktu == produkt_id).first()
     if produkt is None:
-        raise HTTPException(status_code=404, detail="Nie znaleziono produktu")
-    return produkt
+        raise HTTPException(status_code=404, detail="Produkt nie znaleziony")
 
-@app.get("/produkt/", status_code= status.HTTP_200_OK)
-async def pokazProdukty(db: Session = Depends(get_db)):
-    produkty = db.query(models.Produkt).all()
-    if produkty is None:
-        raise HTTPException(status_code=404, detail="Brak produktow")
-    return len(produkty), produkty
+    for field, value in produkt_info.dict(exclude_unset=True).items():
+        setattr(produkt, field, value)
+
+    db.commit()
+    db.refresh(produkt)
+    return produkt
 
 @app.delete("/produkt/{Nazwa}", status_code=status.HTTP_200_OK)
 async def usunProdukt(Nazwa: str, db: db_dependency):
