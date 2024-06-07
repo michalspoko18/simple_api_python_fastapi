@@ -4,8 +4,8 @@ from database import Base
 class Produkt(Base):
     __tablename__ = 'Produkt'
 
-    ID_produktu = Column(Integer, primary_key=True, index=True)
-    Nazwa = Column(String(100), index=True, nullable=True)
+    ID_produktu = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Nazwa = Column(String(100), index=True, nullable=True, unique=True)
     Opis = Column(Text, nullable=True)
     Cena = Column(Numeric(10, 2), nullable=True)
     Producent = Column(String(100), nullable=True)
