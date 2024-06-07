@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import date
 
 class ProduktInfo(BaseModel):
@@ -10,7 +10,7 @@ class ProduktInfo(BaseModel):
     Producent: str
     Kategoria: str
 
-class ProduktAktualizacja(BaseModel):
+class ProduktModyfikacja(BaseModel):
     Nazwa: Optional[str]
     Opis: Optional[str] 
     Cena: Optional[float]
@@ -18,10 +18,13 @@ class ProduktAktualizacja(BaseModel):
     Kategoria: Optional[str]
 
 class ReceptaInfo(BaseModel):
-    ID_Recepty: int
+    Pin_Recepty: int
     ID_Klienta: int
     Data: date
-    Opis: str
+    Opis: Dict[str, Any]
+
+class ReceptaModyfikacja(BaseModel):
+    Opis: Dict[str, Any]
 
 class KlientInfo(BaseModel):
     ID_Klienta: int
@@ -29,4 +32,7 @@ class KlientInfo(BaseModel):
     Nazwisko: str
     Email: str
     Telefon: str
-    Ulica: str
+    Ulica: str 
+    Nr: str
+    Kod_pocztowy: str
+    Miasto: str
