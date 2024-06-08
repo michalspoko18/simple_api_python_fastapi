@@ -15,7 +15,7 @@ class Produkt(Base):
 class Klient(Base):
     __tablename__ = 'Klient'
 
-    ID_Klienta = Column(Integer, primary_key=True, index=True)
+    ID_Klienta = Column(String(11), primary_key=True, index=True)
     Imie = Column(String(50), nullable=False)
     Nazwisko = Column(String(50), nullable=False)
     Email = Column(String(100), nullable=False)
@@ -31,6 +31,6 @@ class Recepta(Base):
 
     ID_Recepty = Column(Integer, primary_key=True, index=True)
     Pin_Recepty = Column(Integer, nullable=False)
-    ID_Klienta = Column(Integer, ForeignKey('Klient.ID_Klienta'), nullable=False)
+    ID_Klienta = Column(String(11), ForeignKey('Klient.ID_Klienta'), nullable=False)
     Data = Column(Date, nullable=False)
     Opis = Column(JSON, nullable=False)

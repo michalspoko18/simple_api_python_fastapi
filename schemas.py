@@ -3,7 +3,6 @@ from typing import List, Optional, Dict, Any
 from datetime import date
 
 class ProduktInfo(BaseModel):
-    ID_Produktu: Optional[int] = None
     Nazwa: str
     Opis: str
     Cena: float
